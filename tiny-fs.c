@@ -669,7 +669,7 @@ NDEBUG_STATIC size_t findMaxFreeBlock(const Media_Desc_p media)
  * @brief allocateClusters allocates free clusters from the pool
  * @param clusterTable pointer to the cluster table (pool)
  * @param clusterTableSize size of the table
- * @param requestedSize bytes to be allocated from th epool
+ * @param requestedSize bytes to be allocated from the pool
  * @return 0 if no space needs to be allocated; UINT32_MAX in case of no room or error;
  * @return start address of the media to write data
  */
@@ -685,10 +685,8 @@ NDEBUG_STATIC uint32_t allocateClusters(uint8_t *clusterTable, size_t clusterTab
 	if ((clusterTable == NULL) || (clusterTableSize == 0U)) {
 		goto fExit;
 	}
-	if (requestedSize == 0U) {
-		retVal = 0U;
-		goto fExit;
-	}
+	requestedSize = (requestedSize == 0U) ? 1U : requestedSize;
+
 	reqClusters = requestedSize / FS_CLUSTER_SIZE;
 	if ((requestedSize % FS_CLUSTER_SIZE) != 0) {
 		reqClusters++;
