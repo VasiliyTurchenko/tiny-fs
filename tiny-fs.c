@@ -305,6 +305,7 @@ FRESULT NewFile(fHandle_p file, const char *name, size_t size, fMode_t mode)
 			goto fExit;
 		}
 		/*2. reserve clusters */
+// TODO BUG HERE!
 		file->fileDir.FileAddress = allocateClusters(DTA, getClusterTableSize(file->media),
 							     file->fileDir.FileSize);
 		/*
@@ -1108,6 +1109,7 @@ FRESULT f_write(FIL *fp, void *const buff, UINT btw, UINT *bw)
 		goto fExit;
 	}
 	fp->filePtr += to_write;
+	fp->fileDir.FileSize = (fp->filePtr > fp->fileDir.FileSize) ? (uint16_t)fp->filePtr : fp->fileDir.FileSize;
 	*bw = to_write;
 	retVal = FR_OK;
 fExit:

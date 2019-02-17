@@ -42,7 +42,12 @@ static testCase_mediaIO_t cases[] = {
 
 	{ .fName = "0001", .fSize = 1000U, .dataSize = 1000U, (uint8_t *)&b1, (uint8_t *)&b2, FR_OK, FR_OK, FR_OK, FR_OK },
 	{ .fName = "0000", .fSize = 0000U, .dataSize = 0000U, (uint8_t *)&b1, (uint8_t *)&b2, FR_OK, FR_OK, FR_OK, FR_OK },
-
+//	{ .fName = "0000", .fSize = 2000U, .dataSize = 16U, (uint8_t *)&b1, (uint8_t *)&b2, FR_OK, FR_OK, FR_OK, FR_OK },
+//	{ .fName = "0002", .fSize = 100U, .dataSize = 16U, (uint8_t *)&b1, (uint8_t *)&b2, FR_OK, FR_OK, FR_OK, FR_OK },
+//	{ .fName = "5320", .fSize = 3320, .dataSize = 3320U, (uint8_t *)&b1, (uint8_t *)&b2, FR_OK, FR_OK, FR_OK, FR_OK },
+//	{ .fName = "993", .fSize = 993, .dataSize = 993U, (uint8_t *)&b1, (uint8_t *)&b2, FR_OK, FR_OK, FR_OK, FR_OK },
+//	{ .fName = "10", .fSize = 10, .dataSize = 10U, (uint8_t *)&b1, (uint8_t *)&b2, FR_OK, FR_OK, FR_OK, FR_OK },
+//	{ .fName = "11", .fSize = 40, .dataSize = 40U, (uint8_t *)&b1, (uint8_t *)&b2, FR_OK, FR_OK, FR_OK, FR_OK },
 };
 
 /**
