@@ -439,6 +439,8 @@ void RandomTest(void)
 	size_t count = 0U;
 	size_t newcount = 0;
 	while (1) {
+
+
 		expected_result_t oracle_result = EXP_NO_RESULT;
 		switch (getAction()) {
 		case (NEW): {

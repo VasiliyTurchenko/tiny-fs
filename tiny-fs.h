@@ -248,6 +248,8 @@ FRESULT f_write (FIL* fp, void * const buff, UINT btw, UINT* bw);
 
 FRESULT f_read(FIL *fp, void *buff, UINT btr, UINT *br);
 
+FRESULT f_checkFS(const Media_Desc_p media);
+
 const char *FRESULT_String(FRESULT res);
 
 #ifdef __cplusplus

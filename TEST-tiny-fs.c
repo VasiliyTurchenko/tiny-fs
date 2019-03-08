@@ -11,9 +11,14 @@
 #include <time.h>
 #include <string.h>
 
+#include "testhelpers.h"
+
 #include "TEST-tiny-fs.h"
 #include "TEST_mediaIO.h"
 #include "random_test.h"
+
+#include "test_f_checkfs.h"
+
 #include "ls.h"
 #include "tiny-fs.h"
 #include "mock.h"
@@ -243,6 +248,8 @@ void Run_TEST(void)
 	TEST_fileIO(&media);
 
 	ls(&media);
+
+	TEST_f_checkFS();
 
 #if(0)
 	RandomTest();
