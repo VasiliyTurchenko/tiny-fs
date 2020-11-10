@@ -164,7 +164,7 @@ typedef struct {
 	uint32_t dummy;		/* not used */
 } FAT_Header_t;
 
-/* FAT entry */
+/* dir entry */
 typedef struct __attribute__((packed)) {
 	char FileName[MAX_FILENAME_LEN + 1U];
 	fState_t FileStatus;		// 2 bytes

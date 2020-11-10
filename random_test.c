@@ -533,7 +533,7 @@ void RandomTest(void)
 		count++;
 		fflush(stdout);
 
-		if (count > 1000U) {
+		if (count > 1000000U) {
 			printf("Current state of the filesystem (ls output):");
 			ls(&testMedia);
 			printf("total runs count = %zu\n", count);
