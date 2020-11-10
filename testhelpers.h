@@ -11,7 +11,7 @@
 #include "test_macros.h"
 
 
-void TestHeader(char * testName);
-void TestFooter(char * testName);
+void TestHeader(const char * testName);
+void TestFooter(const char * testName);
 
 #endif // TESTHELPERS_H

@@ -11,7 +11,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include <strings.h>
+#include <string.h>
+#include <stdbool.h>
 
 #include "mock.h"
 #include "tiny-fs.h"
@@ -19,10 +20,10 @@
 
 #define CASES_ARR_LEN (DIR_ENTRIES / 2U)
 
-#define PANIC                                                                  \
-	do {                                                                   \
-		printf("Panic at %s, %d \n", __FILE__, __LINE__);              \
-		exit(-1);                                                      \
+#define PANIC                                                                                      \
+	do {                                                                                       \
+		printf("Panic at %s, %d \n", __FILE__, __LINE__);                                  \
+		exit(-1);                                                                          \
 	} while (0)
 
 #ifdef DEBUG
@@ -206,17 +207,6 @@ size_t findEmptySlot(test_case_p case0)
 	retVal = UINT32_MAX;
 
 	for (size_t i = 0U; i < CASES_ARR_LEN; i++) {
-		//		uint32_t fake =
-		//			((uint32_t)rand() % 2U) * ((uint32_t)rand() % 2U);
-		//		if (fake != 0U) {
-		//			if (case0[i].file_exists == true) {
-		//				retVal = i;
-		//				printf("\t\t\tFAKE with i = %d, name = %s\n", i,
-		//				       case0[i].name);
-		//				break;
-		//			}
-		//		}
-
 		if (case0[i].file_exists == false) {
 			memset(&case0[i], 0U, MAX_FILENAME_LEN);
 			retVal = i;
@@ -269,9 +259,7 @@ size_t selectFileToDelete(test_case_p case0)
 static void init_oracle(Media_Desc_p media)
 {
 	oracle.clusters_total = getNumClusters(media);
-	oracle.clusters_total -=
-		getClusterFileSize(getClusterTableSize(media)) /
-		FS_CLUSTER_SIZE;
+	oracle.clusters_total -= getClusterFileSize(getClusterTableSize(media)) / FS_CLUSTER_SIZE;
 	oracle.clusters_left = oracle.clusters_total;
 	oracle.entries_left = (DIR_ENTRIES - 1U);
 }
@@ -282,7 +270,7 @@ static void init_oracle(Media_Desc_p media)
  * @param action
  * @return
  */
-expected_result_t run_oracle(Media_Desc_p media,  test_case_p tcase, action_t action)
+expected_result_t run_oracle(Media_Desc_p media, test_case_p tcase, action_t action)
 {
 	size_t fsize_in_clusters = tcase->size / FS_CLUSTER_SIZE;
 
@@ -308,8 +296,7 @@ expected_result_t run_oracle(Media_Desc_p media,  test_case_p tcase, action_t ac
 		/*if file already exist we expect an error */
 		for (size_t i = 0U; i < CASES_ARR_LEN; i++) {
 			if (test_cases[i].file_exists == true) {
-				if (strcmp(tcase->name, test_cases[i].name) ==
-				    0) {
+				if (strcmp(tcase->name, test_cases[i].name) == 0) {
 					result = EXP_NEW_ERR;
 					printf("EXP_NEW_ERR because of file already exists\n");
 					break;
@@ -348,12 +335,9 @@ expected_result_t run_oracle(Media_Desc_p media,  test_case_p tcase, action_t ac
 		break;
 	}
 	case (CLOSE): {
-		if ((tcase->file_exists == true) &&
-		    (tcase->file_opened == true)) {
-			if ((tcase->handle.fileDir.FileStatus ==
-			     FStateOpenedR) ||
-			    (tcase->handle.fileDir.FileStatus ==
-			     FStateOpenedW)) {
+		if ((tcase->file_exists == true) && (tcase->file_opened == true)) {
+			if ((tcase->handle.fileDir.FileStatus == FStateOpenedR) ||
+			    (tcase->handle.fileDir.FileStatus == FStateOpenedW)) {
 				/* otherwize we expect success */
 				printf("EXP_CLOSE_OK\n");
 				result = EXP_CLOSE_OK;
@@ -371,13 +355,14 @@ expected_result_t run_oracle(Media_Desc_p media,  test_case_p tcase, action_t ac
 	}
 	case (DEL): {
 		if (tcase->file_exists == true) {
+
 			if (tcase->file_opened == false) {
 				printf("EXP_DEL_OK\n");
 				result = EXP_DEL_OK;
 				oracle.entries_left++;
 				oracle.clusters_left += fsize_in_clusters;
 				break;
-			} else {
+			}  else {
 				printf("EXP_DEL_ERR because the file is not closed\n");
 				result = EXP_DEL_ERR;
 				break;
@@ -400,22 +385,11 @@ expected_result_t run_oracle(Media_Desc_p media,  test_case_p tcase, action_t ac
 static void printTestCases(void)
 {
 	for (size_t i = 0U; i < CASES_ARR_LEN; i++) {
-		/*
-	char *name;
-	size_t size;
-	fHandle_p handle;
-	expected_result_t expected;
-	bool file_exists;
-	bool file_opened;
-*/
-		printf("Test case %d:\t%s\t%d\t%d", i, test_cases[i].name,
-		       test_cases[i].size, test_cases[i].handle);
-		printf("\texpected: %s",
-		       expected_result_String(test_cases[i].expected));
-		printf("\tfile exists:  %s",
-		       bool_String(test_cases[i].file_exists));
-		printf("\tfile opened: %s\n",
-		       bool_String(test_cases[i].file_opened));
+		printf("Test case %zu:\t%s\t%zu\t%s", i, test_cases[i].name, test_cases[i].size,
+		       test_cases[i].handle.fileDir.FileName);
+		printf("\texpected: %s", expected_result_String(test_cases[i].expected));
+		printf("\tfile exists:  %s", bool_String(test_cases[i].file_exists));
+		printf("\tfile opened: %s\n", bool_String(test_cases[i].file_opened));
 	}
 }
 
@@ -439,8 +413,6 @@ void RandomTest(void)
 	size_t count = 0U;
 	size_t newcount = 0;
 	while (1) {
-
-
 		expected_result_t oracle_result = EXP_NO_RESULT;
 		switch (getAction()) {
 		case (NEW): {
@@ -450,7 +422,7 @@ void RandomTest(void)
 				PANIC;
 			}
 			init_testCase(&test_cases[tcase]);
-			printf("RandomTest: trying to create new file \"%s\" with size %d\n",
+			printf("RandomTest: trying to create new file \"%s\" with size %zu\n",
 			       test_cases[tcase].name, test_cases[tcase].size);
 
 			oracle_result = run_oracle(&testMedia, &test_cases[tcase], NEW);
@@ -459,22 +431,21 @@ void RandomTest(void)
 				newcount++;
 				fflush(stdout);
 			}
-			res = NewFile(&test_cases[tcase].handle,
-				      test_cases[tcase].name,
+			res = NewFile(&test_cases[tcase].handle, test_cases[tcase].name,
 				      test_cases[tcase].size, FModeRead);
 			printf("NewFile result = %s\n", FRESULT_String(res));
 			if (res != FR_OK) {
 				/* no file was created or opened */
 				if (oracle_result != EXP_NEW_ERR) {
 					/* error */
-					printf("%s, %d\n",
-					       test_cases[tcase].name,
+					printf("%s, %zu\n", test_cases[tcase].name,
 					       test_cases[tcase].size);
+					printf("Current state of the filesystem (ls output):");
 					ls(&testMedia);
-					printf("count= %d\n", count);
-					printf("newcount= %d\n", newcount);
+					printf("total runs count = %zu\n", count);
+					printf("NewFile() count= %zu\n", newcount);
 
-					printf("\n");
+					printf("Test casea array :\n");
 					printTestCases();
 					printf("\n");
 
@@ -483,17 +454,15 @@ void RandomTest(void)
 					/*no error */
 					printf("Test passed\n");
 
-					if (test_cases[tcase].file_exists ==
-					    false) {
-						test_cases[tcase].expected =
-							oracle_result;
+					if (test_cases[tcase].file_exists == false) {
+						test_cases[tcase].expected = oracle_result;
 					} else {
 						//
 					}
 				}
 			} else {
 				/* file was opened */
-				printf("OK for tcase = %d\n", tcase);
+				printf("OK for tcase = %zu\n", tcase);
 				test_cases[tcase].expected = oracle_result;
 				test_cases[tcase].file_exists = true;
 				test_cases[tcase].file_opened = true;
@@ -503,7 +472,7 @@ void RandomTest(void)
 		}
 		case (CLOSE): {
 			tcase = selectFileToClose(&test_cases[0]);
-			printf("RandomTest: trying to close file \"%s\" with size %d\n",
+			printf("RandomTest: trying to close file \"%s\" with size %zu\n",
 			       test_cases[tcase].name, test_cases[tcase].size);
 			oracle_result = run_oracle(&testMedia, &test_cases[tcase], CLOSE);
 			fflush(stdout);
@@ -517,8 +486,7 @@ void RandomTest(void)
 				break;
 			}
 
-			if ((res != FR_OK) &&
-			    (oracle_result == EXP_CLOSE_ERR)) {
+			if ((res != FR_OK) && (oracle_result == EXP_CLOSE_ERR)) {
 				printf("Test passed\n");
 			} else {
 				printf("Test failed\n");
@@ -532,15 +500,14 @@ void RandomTest(void)
 		}
 		case (DEL): {
 			tcase = selectFileToDelete(&test_cases[0]);
-			printf("RandomTest: trying to delete file \"%s\" with size %d\n",
+			printf("RandomTest: trying to delete file \"%s\" with size %zu\n",
 			       test_cases[tcase].name, test_cases[tcase].size);
 			oracle_result = run_oracle(&testMedia, &test_cases[tcase], DEL);
 			if (oracle_result == EXP_DEL_OK) {
 				printf("trap!\n");
 				fflush(stdout);
 			}
-			FRESULT res =
-				DeleteFile(&testMedia, test_cases[tcase].name);
+			FRESULT res = DeleteFile(&testMedia, test_cases[tcase].name);
 			printf("DeleteFile result = %s\n", FRESULT_String(res));
 			if ((res == FR_OK) && (oracle_result = EXP_DEL_OK)) {
 				printf("Test passed\n");

@@ -16,16 +16,17 @@ extern "C" {
 #include <stdint.h>
 #include <stddef.h>
 #include <limits.h>
+#include <stdio.h>
 
 #define TEST_FAILED(X, Y)                                                                          \
 	do {                                                                                       \
-	        printf("Test #%d failed at line %d, file %s with FRESULT = %s.\n", (X),       \
-	               __LINE__, __FILE__, (Y));                                                        \
-        } while (0);
+		printf("Test #%zu failed at line %d, file %s with RESULT = %s.\n", (X),       \
+		       __LINE__, __FILE__, (Y));                                                        \
+	} while (0);
 #define TEST_PASSED(X)                                                                             \
 	do {                                                                                       \
-	        printf("Test #%d passed.\n", (X));                                                 \
-        } while (0);
+		printf("Test #%zu passed.\n", (X));                                                 \
+	} while (0);
 
 #ifdef __cplusplus
 }

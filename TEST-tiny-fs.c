@@ -19,6 +19,8 @@
 
 #include "test_f_checkfs.h"
 
+#include "test_ascii_helpers.h"
+
 #include "ls.h"
 #include "tiny-fs.h"
 #include "mock.h"
@@ -84,7 +86,7 @@ static ErrorStatus TEST_FRAM_Write(void)
 
 	for (size_t i = 0U; i < FRAM_SIZE; i++) {
 		if (DTA[i] != DTA1[i]) {
-			printf("Test failed at FRAM addr.: %d (line %d)\n", i,
+			printf("Test failed at FRAM addr.: %zu (line %d)\n", i,
 			       __LINE__);
 		};
 	}
@@ -116,12 +118,14 @@ static void TEST_FindEntry()
 	findResult = findEntry(&testMedia, &entry);
 }
 
+#if(0)
 static void TEST_getBitMask(void)
 {
 	for (uint8_t i = 0U; i < 10U; i++) {
 		printf("TEST_getBitMask %d -> %d \n", i, getBitMask(i));
 	}
 }
+#endif
 
 typedef struct {
 	size_t fatSize;
@@ -183,14 +187,14 @@ static void TEST_allocateClusters(void)
 
 		memcpy(fat_etalon, fat, testCases[i].fatSize);
 
-		printf("allocateClusters test #%d ...", i);
+		printf("allocateClusters test #%zu ...", i);
 
 		size_t res = allocateClusters(fat, testCases[i].fatSize,
 					      testCases[i].requested);
 		if (res == testCases[i].correctAnswer) {
 			printf("\tpassed.");
 		} else {
-			printf("\tfailed. Got %d instead of %d", res,
+			printf("\tfailed. Got %zu instead of %zu", res,
 			       testCases[i].correctAnswer);
 		}
 		if (memcmp(fat_etalon, fat, testCases[i].fatSize) == 0) {
@@ -251,7 +255,7 @@ void Run_TEST(void)
 
 	TEST_f_checkFS();
 
-#if(0)
+#if(1)
 	RandomTest();
 #endif
 
@@ -261,5 +265,7 @@ void Run_TEST(void)
 #endif
 
 #endif
+
+	TEST_ascii_helpers();
 
 }

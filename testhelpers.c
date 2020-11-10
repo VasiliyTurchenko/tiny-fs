@@ -18,7 +18,7 @@
  * @brief TestHeader prints out the test name
  * @param testName
  */
-void TestHeader(char * testName)
+void TestHeader(const char * testName)
 {
 	printf("\nStarting test %s ...\n", testName);
 }
@@ -27,7 +27,7 @@ void TestHeader(char * testName)
  * @brief TestFooter prints out the test name
  * @param testName
  */
-void TestFooter(char * testName)
+void TestFooter(const char * testName)
 {
 	printf("Test %s finished\n", testName);
 }

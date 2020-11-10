@@ -17,6 +17,8 @@
 
 #ifdef DEBUG
 	#define NDEBUG_STATIC
+	#define xprintf printf
+	#include <stdio.h>
 #else
 	#define NDEBUG_STATIC static inline
 #endif

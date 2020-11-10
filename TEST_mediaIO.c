@@ -6,10 +6,11 @@
  *  @date 17-Feb-2019
  */
 
-#include "stdlib.h"
-#include "stdio.h"
-#include "string.h"
-#include "time.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include <stdbool.h>
 
 #include "test_macros.h"
 #include "tiny-fs.h"
@@ -44,10 +45,10 @@ static testCase_mediaIO_t cases[] = {
 	{ .fName = "0000", .fSize = 0000U, .dataSize = 0000U, (uint8_t *)&b1, (uint8_t *)&b2, FR_OK, FR_OK, FR_OK, FR_OK },
 	{ .fName = "0000", .fSize = 2000U, .dataSize = 16U, (uint8_t *)&b1, (uint8_t *)&b2, FR_OK, FR_OK, FR_OK, FR_OK },
 	{ .fName = "0002", .fSize = 100U, .dataSize = 16U, (uint8_t *)&b1, (uint8_t *)&b2, FR_OK, FR_OK, FR_OK, FR_OK },
-	{ .fName = "5320", .fSize = 3320, .dataSize = 3320U, (uint8_t *)&b1, (uint8_t *)&b2, FR_OK, FR_OK, FR_OK, FR_OK },
+	{ .fName = "3320", .fSize = 3320, .dataSize = 3320U, (uint8_t *)&b1, (uint8_t *)&b2, FR_OK, FR_OK, FR_OK, FR_OK },
 	{ .fName = "993", .fSize = 993, .dataSize = 993U, (uint8_t *)&b1, (uint8_t *)&b2, FR_OK, FR_OK, FR_OK, FR_OK },
 	{ .fName = "10", .fSize = 10, .dataSize = 10U, (uint8_t *)&b1, (uint8_t *)&b2, FR_OK, FR_OK, FR_OK, FR_OK },
-	{ .fName = "961", .fSize = 961, .dataSize = 961U, (uint8_t *)&b1, (uint8_t *)&b2, FR_OK, FR_OK, FR_OK, FR_OK },
+	{ .fName = "841", .fSize = 841, .dataSize = 841U, (uint8_t *)&b1, (uint8_t *)&b2, FR_OK, FR_OK, FR_OK, FR_OK },
 };
 
 /**
@@ -78,7 +79,7 @@ void TEST_fileIO(Media_Desc_t *media)
 		ProcTestResult(__FILE__, __LINE__, (res == p->expectedNew), FRESULT_String(res), i);
 
 		size_t bw = 0U;
-		res = f_write(&filehandle, &b1, p->dataSize, &bw);
+		res = f_write(&filehandle, &b1, p->dataSize, (UINT*)&bw);
 		ProcTestResult(__FILE__, __LINE__, (res == p->expectedW), FRESULT_String(res), i);
 		ProcTestResult(__FILE__, __LINE__, (bw == p->dataSize), badDataSize, i);
 
@@ -97,13 +98,13 @@ void TEST_fileIO(Media_Desc_t *media)
 		ProcTestResult(__FILE__, __LINE__, (res == p->expectedNew), FRESULT_String(res), i);
 
 		size_t br = 0U;
-		res = f_read(&filehandle, &b2, p->dataSize, &br);
+		res = f_read(&filehandle, &b2, p->dataSize, (UINT*)&br);
 		ProcTestResult(__FILE__, __LINE__, (res == p->expectedR), FRESULT_String(res), i);
 		ProcTestResult(__FILE__, __LINE__, (br == p->dataSize), badDataSize, i);
 
 		/* read behind the file end */
 
-		res = f_read(&filehandle, &b2, 0U, &br);
+		res = f_read(&filehandle, &b2, 0U, (UINT*)&br);
 		ProcTestResult(__FILE__, __LINE__, (res == FR_OK), FRESULT_String(res), i);
 		ProcTestResult(__FILE__, __LINE__, (br == 0), badDataSize, i);
 
@@ -128,10 +129,10 @@ void TEST_fileIO(Media_Desc_t *media)
 void ProcTestResult(char * filename, int linenum, bool res, const char * msg, size_t testnum)
 {
 	if (res == false) {
-		printf("Test #%d failed at line %d, file %s with result = %s.\n", testnum, linenum, filename, msg);
+		printf("Test #%zu failed at line %d, file %s with result = %s.\n", testnum, linenum, filename, msg);
 		exit(-1);
 	} else {
-		printf("Test #%d passed at line %d, file %s.\n", testnum, linenum, filename);
+		printf("Test #%zu passed at line %d, file %s.\n", testnum, linenum, filename);
 	}
 }
 

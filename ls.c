@@ -25,7 +25,7 @@ void ls(Media_Desc_p media)
 		printf("Test failed at line %d\n", __LINE__);
 		exit(-1);
 	}
-	printf("\nVolume FS version:%d\tHeader CRC32:%08x\tCluster Table Size:%d\n",
+	printf("\nVolume FS version:%d\tHeader CRC32:%08x\tCluster Table Size:%zu\n",
 	       header.FS_version, header.DIR_CRC32,
 	       header.FAT_ClusterTableSize);
 
@@ -83,7 +83,7 @@ void ls(Media_Desc_p media)
 
 			busy_clust += clusters_occu;
 
-			printf("%d\t\t", dirEntry.FileAddress);
+			printf("%zu\t\t", dirEntry.FileAddress);
 			printf("%08x\n", dirEntry.FileCRC32);
 		}
 	}
@@ -93,7 +93,7 @@ void ls(Media_Desc_p media)
 	free_clust = getNumClusters(media);
 	free_clust = free_clust - busy_clust;
 
-	printf("Free space: %d clusters, %d bytes\n\n", free_clust, free_clust * FS_CLUSTER_SIZE);
+	printf("Free space: %zu clusters, %lu bytes\n\n", free_clust, free_clust * FS_CLUSTER_SIZE);
 #else
 	(void)(media);
 #endif

@@ -4,27 +4,41 @@
  *  @author turchenkov@gmail.com
  *  @bug
  *  @date 26-Jan-2019
+ *  @date 08-Mar-2019
  */
 
-#ifndef _TINY_FS_H
-#define _TINY_FS_H
+#ifndef TINY_FS_H
+#define TINY_FS_H
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#include <stdint.h>
-#include <stddef.h>
-#include <limits.h>
+#ifdef STM32F303xC
 
-#include <stdbool.h>
+#include "stm32f303xc.h"
+#include "stm32f3xx_hal.h"
+#include "stm32f3xx_hal_gpio.h"
+#include "stm32f3xx_hal_rcc.h"
+#define NDEBUG_STATIC static inline
+
+#elif STM32F103xB
+
+#include "stm32f103xb.h"
+#include "stm32f1xx_hal.h"
+#include "stm32f1xx_hal_gpio.h"
+#include "stm32f1xx_hal_rcc.h"
+#define NDEBUG_STATIC static inline
+
+#else
 
 #include "debug.h"
 #include "port.h"
 #include "mock.h"
 
-//#include "stm32f3xx.h"
+#endif
+
 
 #define MAX_FILENAME_LEN 7U
 
@@ -202,8 +216,9 @@ typedef FAT_Begin_t *FAT_Begin_p;
 /* these functions ain't static only in DEBUG mode */
 
 #ifdef DEBUG
+#if !defined(STM32F303xC) && !defined(STM32F103xB)
 
-uint32_t findEntry(const Media_Desc_p media, const DIR_Entry_p entry);
+uint32_t findEntry(const Media_Desc_t * const media, const DIR_Entry_p entry);
 
 uint8_t getBitMask(uint8_t n);
 
@@ -211,20 +226,20 @@ uint32_t allocateClusters(uint8_t *clusterTable,
 				       size_t clusterTableSize,
 				       size_t requestedSize);
 
-
-size_t getNumClusters(const Media_Desc_p media);
+size_t getNumClusters(const Media_Desc_t * const media);
 
 size_t getClusterFileSize(size_t clusterTableSize);
 
-size_t getClusterTableSize(const Media_Desc_p media);
+size_t findMaxFreeBlock(const Media_Desc_t * media);
 
-size_t findMaxFreeBlock(const Media_Desc_p media);
+size_t getClusterTableSize(const Media_Desc_t * const media);
 
+#endif
 #endif
 
 void InitFS(void);
 
-ErrorStatus Format(const Media_Desc_p media);
+ErrorStatus Format(const Media_Desc_t * const media);
 
 FRESULT NewFile(fHandle_p file, const char *name, size_t size, fMode_t mode);
 
@@ -234,7 +249,7 @@ FRESULT CloseFile(fHandle_p file);
 
 FRESULT f_close (FIL* fp);							/* Close an open file object */
 
-FRESULT DeleteFile(const Media_Desc_p media, const char *name);
+FRESULT DeleteFile(const Media_Desc_t *media, const char *name);
 
 FRESULT f_unlink (const TCHAR* path);						/* Delete an existing file or directory */
 
@@ -248,7 +263,7 @@ FRESULT f_write (FIL* fp, void * const buff, UINT btw, UINT* bw);
 
 FRESULT f_read(FIL *fp, void *buff, UINT btr, UINT *br);
 
-FRESULT f_checkFS(const Media_Desc_p media);
+FRESULT f_checkFS(const Media_Desc_t *media);
 
 const char *FRESULT_String(FRESULT res);
 
