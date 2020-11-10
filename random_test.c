@@ -355,14 +355,13 @@ expected_result_t run_oracle(Media_Desc_p media, test_case_p tcase, action_t act
 	}
 	case (DEL): {
 		if (tcase->file_exists == true) {
-
 			if (tcase->file_opened == false) {
 				printf("EXP_DEL_OK\n");
 				result = EXP_DEL_OK;
 				oracle.entries_left++;
 				oracle.clusters_left += fsize_in_clusters;
 				break;
-			}  else {
+			} else {
 				printf("EXP_DEL_ERR because the file is not closed\n");
 				result = EXP_DEL_ERR;
 				break;
@@ -445,7 +444,7 @@ void RandomTest(void)
 					printf("total runs count = %zu\n", count);
 					printf("NewFile() count= %zu\n", newcount);
 
-					printf("Test casea array :\n");
+					printf("Test cases array :\n");
 					printTestCases();
 					printf("\n");
 
@@ -533,6 +532,14 @@ void RandomTest(void)
 		}
 		count++;
 		fflush(stdout);
+
+		if (count > 1000U) {
+			printf("Current state of the filesystem (ls output):");
+			ls(&testMedia);
+			printf("total runs count = %zu\n", count);
+			printf("NewFile() count= %zu\n", newcount);
+			break;
+		}
 	}
 	return;
 }

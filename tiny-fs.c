@@ -398,7 +398,7 @@ FRESULT NewFile(fHandle_p file, const char *name, size_t size, fMode_t mode)
 		goto fExit;
 	}
 	DIR_Entry_t tmp_entry;
-	/* read the cluster file */
+	/* read the parameters of the cluster file aka $$FAT$$ */
 	if (file->media->readFunc((uint8_t *)&tmp_entry,
 				  offsetof(FAT_Begin_t, entry0),
 				  sizeof(DIR_Entry_t)) == ERROR) {
@@ -406,7 +406,7 @@ FRESULT NewFile(fHandle_p file, const char *name, size_t size, fMode_t mode)
 		retVal = FR_DISK_ERR;
 		goto fExit;
 	}
-
+	/* read the cluster file aka $$FAT$$ into DTA */
 	if (file->media->readFunc(DTA, tmp_entry.FileAddress,
 				  tmp_entry.FileSize) == ERROR) {
 		/* read error */
@@ -415,9 +415,9 @@ FRESULT NewFile(fHandle_p file, const char *name, size_t size, fMode_t mode)
 	}
 	/* DTA now contains cluster table */
 
-	/* look up the FAT for the file name */
+	/* look up the directory for the file name */
 
-	size_t entry_index; /* index of found FAT entry */
+	size_t entry_index; /* index of found directory entry */
 	strncpy((char *)&file->fileDir.FileName, name, MAX_FILENAME_LEN);
 	file->fileDir.FileName[MAX_FILENAME_LEN] = '\0';
 
@@ -431,7 +431,7 @@ FRESULT NewFile(fHandle_p file, const char *name, size_t size, fMode_t mode)
 	}
 	if (entry_index == 0U) {
 		/* no file? create the new one */
-		/*1. find free slot */
+		/*1. find free slot int the directory */
 		entry_index = FindFreeSlot(file->media);
 		if (entry_index == UINT32_MAX) {
 			/* read error */
@@ -473,6 +473,9 @@ FRESULT NewFile(fHandle_p file, const char *name, size_t size, fMode_t mode)
 			file->fileDir.FileStatus = FStateOpenedW;
 		}
 		/*
+		WARNING! The new created directory entry for the file is not written to the media
+		immediately! This will be done after closing file!
+
 		retVal = FR_OK;
 
 		if (SaveDirEntry(file->media, entry_index, &file->fileDir) != entry_index) {
@@ -504,6 +507,8 @@ FRESULT NewFile(fHandle_p file, const char *name, size_t size, fMode_t mode)
 		file->filePtr = 0U;
 		/* 3. exit */
 		/*
+		WARNING! The new state of the directory entry for the file is not written to the media
+		immediately! This will be done after closing file!
 		retVal = FR_OK;
 */
 	}
@@ -517,7 +522,7 @@ FRESULT NewFile(fHandle_p file, const char *name, size_t size, fMode_t mode)
 fExit:
 	if (retVal != FR_OK) {
 		if (mutexNumber < FS_CONCURRENT_FILES) {
-		resetMutex(mutexNumber);
+			resetMutex(mutexNumber);
 		}
 	} else {
 		file->pmutex = &mutexes[mutexNumber];

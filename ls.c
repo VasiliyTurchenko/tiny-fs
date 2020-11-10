@@ -31,7 +31,7 @@ void ls(Media_Desc_p media)
 
 	size_t busy_clust = 0U;
 
-	printf("FILE\tSTATE\tSIZE\tADDRESS\t\tCRC32\n");
+	printf("FILE\tSTATE\t\tSIZE\tADDRESS\t\tCRC32\n");
 	for (size_t i = 0U; i < DIR_ENTRIES; i++) {
 		size_t mediaAddr;
 		if (i == 0U) {
@@ -58,15 +58,15 @@ void ls(Media_Desc_p media)
 				break;
 			}
 			case FStateClosed: {
-				printf("closed\t");
+				printf("closed\t\t");
 				break;
 			}
 			case FStateOpenedR: {
-				printf("openedR\t");
+				printf("openedR\t\t");
 				break;
 			}
 			case FStateOpenedW: {
-				printf("openedW\t");
+				printf("openedW\t\t");
 				break;
 			}
 			default: {
